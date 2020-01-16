@@ -40,7 +40,7 @@ door_state: (:opne/:closed) motor_direction: (:hall_up/:hall_down/:cab) floor: (
 If you are using rebar3, downloading the dependency is somewhat similair, but you need a plugin. Just add/modify the lines for `plugins` and `provider_hooks` in rebar.config, so that they look like this
 
 ```
-{plugins, [steamroller, rebar_mix]}.
+{plugins, [rebar_mix]}.
 {provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.
 ```
 
