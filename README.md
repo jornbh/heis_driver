@@ -1,4 +1,4 @@
-# driver-elixir
+# Elixir elevator driver
 
 If you are using Mix as you Elixir build tool (which you really should), go into mix.exs and modify the function `deps` to contain
 
@@ -34,6 +34,30 @@ You must start the driver with `start_link()` or `start_link(ip_address, port)` 
 ### Data-types
 
 door_state: (:opne/:closed) motor_direction: (:hall_up/:hall_down/:cab) floor: (0/1/.../number_of_floors -1) door_state: :open/:closed
+
+
+## Using the driver in Erlang
+If you are using rebar3, downloading the dependency is somewhat similair, but you need a plugin. Just add/modify the lines for `plugins` and `provider_hooks` in rebar.config, so that they look like this
+
+```
+{plugins, [steamroller, rebar_mix]}.
+{provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.
+```
+
+This makes it possible to include elixir-dependencies. Afterwards, modify the line for `deps`, so that it becomes:
+
+```[erlang] 
+{deps, [
+    {heis_driver, {git, "git://github.com/jornbh/heis_driver.git", {tag, "0.1.0"}}}
+]}.
+```
+
+Now, you will have to write call the module, which will be an atom that starts With "Elixir.", and the rest is just the normal module name. If the function has problematic signs, use the same type of quotes around it as well. 
+
+```
+'Elixir.Driver':set_door_state(closed). 
+'Elixir.Driver':'button_pressed?'(1, hall_up).
+```
 
 ## Further reading
 
