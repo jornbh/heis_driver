@@ -1,23 +1,29 @@
 
-defmodule RawDriver do
+defmodule Driver do
   @moduledoc"""
   All credits to Jostein for implementing this
   ## Description
-  You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work
+  You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work. The user is responsible for not giving stupid input, or polling nonexistent buttons
 
   ## API:
+
+  ### Functions
   ```
   {:ok, driver_pid} = Driver.start_link
-  set_motor_direction( driver_pid, motor_direction  )
-  set_order_button_light( driver_pid, button_direction ,floor, on_or_off   )
-  set_floor_indicator( driver_pid, floor )
-  set_stop_button_light( driver_pid, on_or_off )
-  set_door_open_light( driver_pid, on_or_off )
-  get_order_button_state( driver_pid,floor, button_direction   )
-  get_floor_sensor_state( driver_pid )
-  get_stop_button_state( driver_pid )
-  get_obstruction_switch_state( driver_pid )
+  button_pressed?(floor, button_direction)
+  set_motor_dir(motor_direction)
+  set_button_light(floor, button_direction, on_or_off)
+  set_floor_indicator(floor)
+  set_door_state(door_state)
   ```
+
+  ### Data-types
+
+  door_state:  (:opne/:closed)
+  motor_direction: (:hall_up/:hall_down/:cab)
+  floor: (0/1/.../number_of_floors -1)
+  door_state: :open/:closed
+
 
   ## Further reading
   GenServers are a really neat way to make servers without having to rewrite the same code all the time. It works *Exactly* the same in erlang as well, but it is called gen_server instead. The erlang documentation is kind of hard understand, so use the elixir-video and "Translate" it to erlang (gen_server:call(...) instead of GenServer.call(...)).
@@ -29,13 +35,14 @@ defmodule RawDriver do
 
   """
   use GenServer
-  @type button_dir :: :hall_up | :hall_down | :cab
+
   # Define Types used by dialyzer
-  @type button :: :hall_up | :hall_down | :cab
-  @type motor :: :up | :down | :stop
+  @type button_dir :: :hall_up | :hall_down | :cab
+  @type motor_dir :: :up | :down | :stop
   @type state :: :on | :off
   @type ip_address :: {integer(), integer(), integer(), integer()}
 
+  @spec child_spec(ip_address, integer) :: %{id: Driver, start: {Driver, :start_link, [...]}}
   def child_spec(ip, port) do
     %{
       id: __MODULE__,
@@ -47,33 +54,36 @@ defmodule RawDriver do
     start_link({127,0,0,1}, 15657)
   end
 
+  @spec start_link(ip_address, integer()) :: {:ok, pid}
   def start_link(ip, port) do
-    GenServer.start_link(__MODULE__, {ip, port}, name: __MODULE__)
+    {:ok, _pid} = GenServer.start_link(__MODULE__, {ip, port}, name: __MODULE__)
   end
 
   @impl true
   def init({ip, port}) do
     result = :gen_tcp.connect(ip, port, [{:active, false}])
-    IO.inspect(result)
     result
   end
 
+  @spec button_dir?(button_dir) :: boolean
   def button_dir?(dir) do
     Enum.member?([:hall_up, :hall_down, :cab], dir)
   end
 
-  @spec poll_floor :: integer() | :between_floors
-  def poll_floor() do
+  @spec check_floor :: integer() | :between_floors
+  def check_floor() do
     GenServer.call(__MODULE__, :poll_floor_state)
   end
 
-  @spec poll_button?(integer, button_dir) :: boolean
-  def poll_button?(floor, dir) do
+  @spec button_pressed?(integer, button_dir) :: boolean
+  def button_pressed?(floor, dir) do
     case button_dir?(dir) do
       true -> GenServer.call(__MODULE__, {:poll_button, floor, dir}, :infinity)
       _ -> {:error, :invalid_dir, dir}
     end
   end
+
+  @spec set_motor_dir(motor_dir) :: :invalid_input | :ok
   def set_motor_dir(motor_dir) do
     motor_dirs = [:motor_up, :motor_down, :motor_still]
     case Enum.member?(motor_dirs, motor_dir) do
@@ -81,6 +91,7 @@ defmodule RawDriver do
       _-> :invalid_input
     end
   end
+  @spec set_button_light(integer, button_dir, :on | :off) :: :invalid_input | :ok
   def set_button_light(floor, dir, wanted_state) do
     is_state = Enum.member?( [:on, :off], wanted_state)
     is_dir = button_dir?(dir)
@@ -92,9 +103,14 @@ defmodule RawDriver do
         :invalid_input
     end
   end
+
+
+  @spec set_floor_indicator(integer) :: :ok
   def set_floor_indicator(floor) do
     GenServer.cast(__MODULE__, {:set_floor_indicator, floor})
   end
+
+
   # Internally needed functions
   def set_door_state(door_state) do
     case door_state do
@@ -130,7 +146,7 @@ defmodule RawDriver do
     {:noreply, socket}
   end
   def handle_cast(invalid_message, socket) do
-    IO.write "Raw-driver got invalid message: "
+    IO.write "Driver got invalid message: "
     IO.inspect invalid_message
     {:noreply, socket}
   end
@@ -154,7 +170,7 @@ defmodule RawDriver do
     # TODO Define types
     dir_codes = %{hall_up: 0, hall_down: 1, cab: 2}
     dir_code = dir_codes[dir]
-    message = [6, dir_code, floor-1, 0] #TODO Fix the 0-indexing of the floors
+    message = [6, dir_code, floor, 0] #TODO Fix the 0-indexing of the floors
     :gen_tcp.send(socket, message)
     result = :gen_tcp.recv(socket, 4, 1000)
     {:ok, response} = result
@@ -168,7 +184,7 @@ defmodule RawDriver do
     {:reply, server_reply, socket}
   end
   def handle_call(request, from, socket) do
-    IO.write("Unknown call: ")
+    IO.write("Driver got unknown call: ")
     IO.inspect(request)
     IO.inspect(from)
     {:reply, {:error, "Unknown call"}, socket}
