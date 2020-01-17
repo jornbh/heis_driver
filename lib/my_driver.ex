@@ -1,12 +1,11 @@
 
 defmodule Driver do
   @moduledoc"""
-  All credits to Jostein for implementing this
+  # Communicates between erlang and elixir
+  A driver for talking with the elevator in Erlang and Elixir
   ## Description
   You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work. The user is responsible for not giving stupid input, or polling nonexistent buttons
-
   ## API:
-
   ### Functions
   ```
   {:ok, driver_pid} = Driver.start_link
@@ -16,15 +15,11 @@ defmodule Driver do
   set_floor_indicator(floor)
   set_door_state(door_state)
   ```
-
   ### Data-types
-
   door_state:  (:opne/:closed)
   motor_direction: (:hall_up/:hall_down/:cab)
   floor: (0/1/.../number_of_floors -1)
   door_state: :open/:closed
-
-
   ## Further reading
   GenServers are a really neat way to make servers without having to rewrite the same code all the time. It works *Exactly* the same in erlang as well, but it is called gen_server instead. The erlang documentation is kind of hard understand, so use the elixir-video and "Translate" it to erlang (gen_server:call(...) instead of GenServer.call(...)).
 
@@ -33,6 +28,7 @@ defmodule Driver do
   ### A youtube-video that explains GenServers and Supervisors
   https://www.youtube.com/watch?v=3EjRvaCOl94
 
+  Credits to Jostein for implementing this
   """
   use GenServer
 

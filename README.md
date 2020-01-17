@@ -2,7 +2,6 @@
 
 [Documetnation](https://jornbh.github.io/heis_driver/doc/index.html)
 
-
 If you are using Mix as you Elixir build tool (which you really should), go into mix.exs and modify the function `deps` to contain
 
 ```[elixir]
