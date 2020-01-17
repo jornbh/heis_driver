@@ -1,5 +1,8 @@
 # Elixir elevator driver
 
+[Documetnation](https://jornbh.github.io/heis_driver/doc/index.html)
+
+
 If you are using Mix as you Elixir build tool (which you really should), go into mix.exs and modify the function `deps` to contain
 
 ```[elixir]
@@ -35,9 +38,9 @@ You must start the driver with `start_link()` or `start_link(ip_address, port)` 
 
 door_state: (:opne/:closed) motor_direction: (:hall_up/:hall_down/:cab) floor: (0/1/.../number_of_floors -1) door_state: :open/:closed
 
-
 ## Using the driver in Erlang
-If you are using rebar3, downloading the dependency is somewhat similair, but you need a plugin. Just add/modify the lines for `plugins` and `provider_hooks` in rebar.config, so that they look like this
+
+If you are using rebar3, downloading the dependency is somewhat similar, but you need a plugin. Just add/modify the lines for `plugins` and `provider_hooks` in rebar.config, so that they look like this
 
 ```
 {plugins, [steamroller, rebar_mix]}.
@@ -46,13 +49,13 @@ If you are using rebar3, downloading the dependency is somewhat similair, but yo
 
 This makes it possible to include elixir-dependencies. Afterwards, modify the line for `deps`, so that it becomes:
 
-```[erlang] 
+```[erlang]
 {deps, [
     {heis_driver, {git, "git://github.com/jornbh/heis_driver.git", {tag, "0.1.0"}}}
 ]}.
 ```
 
-Now, you will have to write call the module, which will be an atom that starts With "Elixir.", and the rest is just the normal module name. If the function has problematic signs, use the same type of quotes around it as well. 
+Now, you will have to write call the module, which will be an atom that starts With "Elixir.", and the rest is just the normal module name. If the function has problematic signs, use the same type of quotes around it as well.
 
 ```
 'Elixir.Driver':set_door_state(closed). 
@@ -63,7 +66,7 @@ Now, you will have to write call the module, which will be an atom that starts W
 
 GenServers are a really neat way to make servers without having to rewrite the same code all the time. It works _Exactly_ the same in Erlang as well, but it is called gen_server instead. The erlang documentation is kind of difficult to understand, so use the elixir-video and "Translate" it to Erlang (gen_server:call(...) instead of GenServer.call(...)).
 
-Short version is that a GenServer implements the basic parts of a server, and the code seen in this file is the "Blanks you have to fill in"
+The short version is that a GenServer implements the basic parts of a server, and the code that is seen in this file is the "Blanks" you have to fill in
 
 ### A youtube-video that explains GenServers and Supervisors
 
