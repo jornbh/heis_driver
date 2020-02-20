@@ -8,7 +8,7 @@
     <meta name="project" content="heis_driver v0.1.0">
     <title>Driver — heis_driver v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
-    <script src="dist/sidebar_items-136e0ffee9.js"></script>
+    <script src="dist/sidebar_items-1c6bdd4598.js"></script>
       <script src="docs_config.js"></script>
     <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
     
@@ -41,7 +41,7 @@
 
   <div class="sidebar-header">
     <div class="sidebar-projectDetails">
-      <a href="api-reference.html" class="sidebar-projectName">
+      <a href="Driver.html" class="sidebar-projectName">
 heis_driver      </a>
       <h2 class="sidebar-projectVersion">
         v0.1.0
@@ -76,39 +76,42 @@ Driver
 
 
         <section id="moduledoc">
-<h1>Communicates between erlang and elixir</h1>
-<p>A driver for talking with the elevator in Erlang and Elixir</p>
+<p>An elixir-driver communicating with &#39;SimElevatorServer&#39; or the elevator server.</p>
 <h2 id="module-description" class="section-heading">
   <a href="#module-description" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Description
 </h2>
 
 <p>You must start the driver with <code class="inline">start_link()</code> or <code class="inline">start_link(ip_address, port)</code> before any of the other functions will work. The user is responsible for not giving stupid input, or polling nonexistent buttons</p>
-<h2 id="module-api" class="section-heading">
-  <a href="#module-api" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  API:
+<h2 id="module-including-the-driver-in-projects" class="section-heading">
+  <a href="#module-including-the-driver-in-projects" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Including the driver in projects
 </h2>
 
-<h3 id="module-functions" class="section-heading">
-  <a href="#module-functions" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Functions
+<h3 id="module-elixir" class="section-heading">
+  <a href="#module-elixir" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Elixir
 </h3>
 
-<pre><code class="nohighlight makeup elixir"><span class="p" data-group-id="7337421088-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">driver_pid</span><span class="p" data-group-id="7337421088-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Driver</span><span class="o">.</span><span class="n">start_link</span><span class="w">
-</span><span class="n">button_pressed?</span><span class="p" data-group-id="7337421088-2">(</span><span class="n">floor</span><span class="p">,</span><span class="w"> </span><span class="n">button_direction</span><span class="p" data-group-id="7337421088-2">)</span><span class="w">
-</span><span class="n">set_motor_dir</span><span class="p" data-group-id="7337421088-3">(</span><span class="n">motor_direction</span><span class="p" data-group-id="7337421088-3">)</span><span class="w">
-</span><span class="n">set_button_light</span><span class="p" data-group-id="7337421088-4">(</span><span class="n">floor</span><span class="p">,</span><span class="w"> </span><span class="n">button_direction</span><span class="p">,</span><span class="w"> </span><span class="n">on_or_off</span><span class="p" data-group-id="7337421088-4">)</span><span class="w">
-</span><span class="n">set_floor_indicator</span><span class="p" data-group-id="7337421088-5">(</span><span class="n">floor</span><span class="p" data-group-id="7337421088-5">)</span><span class="w">
-</span><span class="n">set_door_state</span><span class="p" data-group-id="7337421088-6">(</span><span class="n">door_state</span><span class="p" data-group-id="7337421088-6">)</span></code></pre>
-<h3 id="module-data-types" class="section-heading">
-  <a href="#module-data-types" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Data-types
+<p>Modify the deps-list in <code class="inline">mix.exs</code>, do that it includes</p>
+<pre><code class="[elixir]">defp deps do
+    [
+      {:heis_driver, git: &quot;https://github.com/jornbh/heis_driver.git&quot;, tag: &quot;0.1.0&quot;}
+    ]
+  end</code></pre>
+<h3 id="module-erlang" class="section-heading">
+  <a href="#module-erlang" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Erlang
 </h3>
 
-<p>door_state:  (:opne/:closed)
-motor_direction: (:hall_up/:hall_down/:cab)
-floor: (0/1/.../number_of_floors -1)
-door_state: :open/:closed</p>
+<p>You need some extra plugins to include elixir-code.</p>
+<pre><code class="[erlang]">  {plugins, [rebar_mix]}.
+  {provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.</code></pre>
+<p>This makes it possible to include elixir-dependencies. Afterwards, modify the line for <code class="inline">deps</code> in <code class="inline">rebar.config</code>, so that it becomes:</p>
+<pre><code class="[erlang]">  {deps, [
+      {heis_driver, {git, &quot;git://github.com/jornbh/heis_driver.git&quot;, {tag, &quot;0.1.0&quot;}}}
+  ]}.</code></pre>
+<p>You might have to call the dunctions like <code class="inline">&#39;Elixir.Driver&#39;:&#39;button_pressed?&#39;(1, hall_up)</code> if the names do not follow the conventions for atoms in Erlang.</p>
 <h2 id="module-further-reading" class="section-heading">
   <a href="#module-further-reading" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Further reading
@@ -152,11 +155,6 @@ door_state: :open/:closed</p>
     <a href="#t:motor_dir/0">motor_dir()</a>
   </div>
 </div>
-<div class="summary-row">
-  <div class="summary-signature">
-    <a href="#t:state/0">state()</a>
-  </div>
-</div>
   </div>
   <div class="summary-functions summary">
     <h2>
@@ -164,17 +162,7 @@ door_state: :open/:closed</p>
     </h2>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#button_dir?/1">button_dir?(dir)</a>
-  </div>
-</div>
-<div class="summary-row">
-  <div class="summary-signature">
     <a href="#button_pressed?/2">button_pressed?(floor, dir)</a>
-  </div>
-</div>
-<div class="summary-row">
-  <div class="summary-signature">
-    <a href="#check_floor/0">check_floor()</a>
   </div>
 </div>
 <div class="summary-row">
@@ -186,6 +174,11 @@ door_state: :open/:closed</p>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#child_spec/2">child_spec(ip, port)</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#poll_floor_sensor/0">poll_floor_sensor()</a>
   </div>
 </div>
 <div class="summary-row">
@@ -236,7 +229,7 @@ Types          </h1>
       <span class="sr-only">Link to this type</span>
     </a>
     <h1 class="signature">button_dir()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L36" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L49" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -255,7 +248,7 @@ Types          </h1>
       <span class="sr-only">Link to this type</span>
     </a>
     <h1 class="signature">ip_address()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L39" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L51" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -274,32 +267,13 @@ Types          </h1>
       <span class="sr-only">Link to this type</span>
     </a>
     <h1 class="signature">motor_dir()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L37" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L50" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
         
       <div class="specs">
           <pre>motor_dir() :: :up | :down | :stop</pre>
-      </div>
-  </div>
-  <section class="docstring">
-  </section>
-</section>
-<section class="detail" id="t:state/0">
-  <div class="detail-header">
-    <a href="#t:state/0" class="detail-link" title="Link to this type">
-      <span class="icon-link" aria-hidden="true"></span>
-      <span class="sr-only">Link to this type</span>
-    </a>
-    <h1 class="signature">state()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L38" class="view-source" rel="help" title="View Source">
-       <span class="icon-code" aria-hidden="true"></span>
-       <span class="sr-only">View Source</span>
-     </a>
-        
-      <div class="specs">
-          <pre>state() :: :on | :off</pre>
       </div>
   </div>
   <section class="docstring">
@@ -315,25 +289,6 @@ Types          </h1>
             </a>
 Functions          </h1>
           <div class="functions-list">
-<section class="detail" id="button_dir?/1">
-  <div class="detail-header">
-    <a href="#button_dir?/1" class="detail-link" title="Link to this function">
-      <span class="icon-link" aria-hidden="true"></span>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature">button_dir?(dir)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L65" class="view-source" rel="help" title="View Source">
-       <span class="icon-code" aria-hidden="true"></span>
-       <span class="sr-only">View Source</span>
-     </a>
-        
-      <div class="specs">
-          <pre>button_dir?(<a href="#t:button_dir/0">button_dir</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
-      </div>
-  </div>
-  <section class="docstring">
-  </section>
-</section>
 <section class="detail" id="button_pressed?/2">
   <div class="detail-header">
     <a href="#button_pressed?/2" class="detail-link" title="Link to this function">
@@ -341,32 +296,13 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">button_pressed?(floor, dir)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L75" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L84" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
         
       <div class="specs">
           <pre>button_pressed?(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>(), <a href="#t:button_dir/0">button_dir</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
-      </div>
-  </div>
-  <section class="docstring">
-  </section>
-</section>
-<section class="detail" id="check_floor/0">
-  <div class="detail-header">
-    <a href="#check_floor/0" class="detail-link" title="Link to this function">
-      <span class="icon-link" aria-hidden="true"></span>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature">check_floor()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L70" class="view-source" rel="help" title="View Source">
-       <span class="icon-code" aria-hidden="true"></span>
-       <span class="sr-only">View Source</span>
-     </a>
-        
-      <div class="specs">
-          <pre>check_floor() :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>() | :between_floors</pre>
       </div>
   </div>
   <section class="docstring">
@@ -379,7 +315,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">child_spec(arg)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L33" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L46" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -396,7 +332,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">child_spec(ip, port)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L42" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L54" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -411,6 +347,25 @@ Functions          </h1>
   <section class="docstring">
   </section>
 </section>
+<section class="detail" id="poll_floor_sensor/0">
+  <div class="detail-header">
+    <a href="#poll_floor_sensor/0" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">poll_floor_sensor()</h1>
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L79" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+        
+      <div class="specs">
+          <pre>poll_floor_sensor() :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>() | :between_floors</pre>
+      </div>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
 <section class="detail" id="set_button_light/3">
   <div class="detail-header">
     <a href="#set_button_light/3" class="detail-link" title="Link to this function">
@@ -418,7 +373,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">set_button_light(floor, dir, wanted_state)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L91" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L100" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -437,7 +392,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">set_door_state(door_state)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L111" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L119" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -452,7 +407,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">set_floor_indicator(floor)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L105" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L114" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -471,7 +426,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">set_motor_dir(motor_dir)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L83" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L92" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -490,7 +445,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">start_link()</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L49" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L61" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>
@@ -505,7 +460,7 @@ Functions          </h1>
       <span class="sr-only">Link to this function</span>
     </a>
     <h1 class="signature">start_link(ip, port)</h1>
-      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L54" class="view-source" rel="help" title="View Source">
+      <a href="https://github.com/jornbh/heis_driver/blob/master/lib/my_driver.ex#L66" class="view-source" rel="help" title="View Source">
        <span class="icon-code" aria-hidden="true"></span>
        <span class="sr-only">View Source</span>
      </a>

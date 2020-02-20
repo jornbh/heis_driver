@@ -9,8 +9,14 @@ defmodule HeisDriver.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
+      author: "Jørn Bøni Hofstad",
       #docs
       source_url: "https://github.com/jornbh/heis_driver",
+      docs: [
+        main: "Driver",
+        extras: ["README.md"],
+        dialyzer: [ flags: ["-Wunmatched_returns", :error_handling, :underspecs]],
+      ]
 
     ]
   end

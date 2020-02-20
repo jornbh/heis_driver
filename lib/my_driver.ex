@@ -1,41 +1,53 @@
 
 defmodule Driver do
   @moduledoc"""
-  # Communicates between erlang and elixir
-  A driver for talking with the elevator in Erlang and Elixir
-  ## Description
-  You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work. The user is responsible for not giving stupid input, or polling nonexistent buttons
-  ## API:
-  ### Functions
-  ```
-  {:ok, driver_pid} = Driver.start_link
-  button_pressed?(floor, button_direction)
-  set_motor_dir(motor_direction)
-  set_button_light(floor, button_direction, on_or_off)
-  set_floor_indicator(floor)
-  set_door_state(door_state)
-  ```
-  ### Data-types
-  door_state:  (:opne/:closed)
-  motor_direction: (:hall_up/:hall_down/:cab)
-  floor: (0/1/.../number_of_floors -1)
-  door_state: :open/:closed
-  ## Further reading
-  GenServers are a really neat way to make servers without having to rewrite the same code all the time. It works *Exactly* the same in erlang as well, but it is called gen_server instead. The erlang documentation is kind of hard understand, so use the elixir-video and "Translate" it to erlang (gen_server:call(...) instead of GenServer.call(...)).
+      An elixir-driver communicating with 'SimElevatorServer' or the elevator server.
 
-  Short version is that a GenServer implements the basic parts of a server, and the code seen in this file is the "Blanks you have to fill in"
+      ## Description
+      You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work. The user is responsible for not giving stupid input, or polling nonexistent buttons
 
-  ### A youtube-video that explains GenServers and Supervisors
-  https://www.youtube.com/watch?v=3EjRvaCOl94
 
-  Credits to Jostein for implementing this
-  """
+      ## Including the driver in projects
+      ### Elixir
+      Modify the deps-list in `mix.exs`, do that it includes
+      ```[elixir]
+      defp deps do
+          [
+            {:heis_driver, git: "https://github.com/jornbh/heis_driver.git", tag: "0.1.0"}
+          ]
+        end
+      ```
+
+      ### Erlang
+      You need some extra plugins to include elixir-code.
+      ```[erlang]
+        {plugins, [rebar_mix]}.
+        {provider_hooks, [{post, [{compile, {mix, consolidate_protocols}}]}]}.
+      ```
+
+      This makes it possible to include elixir-dependencies. Afterwards, modify the line for `deps` in `rebar.config`, so that it becomes:
+
+      ```[erlang]
+        {deps, [
+            {heis_driver, {git, "git://github.com/jornbh/heis_driver.git", {tag, "0.1.0"}}}
+        ]}.
+      ```
+      You might have to call the dunctions like `'Elixir.Driver':'button_pressed?'(1, hall_up)` if the names do not follow the conventions for atoms in Erlang.
+      ## Further reading
+      GenServers are a really neat way to make servers without having to rewrite the same code all the time. It works *Exactly* the same in erlang as well, but it is called gen_server instead. The erlang documentation is kind of hard understand, so use the elixir-video and "Translate" it to erlang (gen_server:call(...) instead of GenServer.call(...)).
+
+      Short version is that a GenServer implements the basic parts of a server, and the code seen in this file is the "Blanks you have to fill in"
+
+      ### A youtube-video that explains GenServers and Supervisors
+      https://www.youtube.com/watch?v=3EjRvaCOl94
+
+      Credits to Jostein for implementing this
+      """
   use GenServer
 
   # Define Types used by dialyzer
   @type button_dir :: :hall_up | :hall_down | :cab
   @type motor_dir :: :up | :down | :stop
-  @type state :: :on | :off
   @type ip_address :: {integer(), integer(), integer(), integer()}
 
   @spec child_spec(ip_address, integer) :: %{id: Driver, start: {Driver, :start_link, [...]}}
@@ -61,13 +73,10 @@ defmodule Driver do
     result
   end
 
-  @spec button_dir?(button_dir) :: boolean
-  def button_dir?(dir) do
-    Enum.member?([:hall_up, :hall_down, :cab], dir)
-  end
 
-  @spec check_floor :: integer() | :between_floors
-  def check_floor() do
+
+  @spec poll_floor_sensor :: integer() | :between_floors
+  def poll_floor_sensor() do
     GenServer.call(__MODULE__, :poll_floor_state)
   end
 
@@ -81,7 +90,7 @@ defmodule Driver do
 
   @spec set_motor_dir(motor_dir) :: :invalid_input | :ok
   def set_motor_dir(motor_dir) do
-    motor_dirs = [:motor_up, :motor_down, :motor_still]
+    motor_dirs = [:motor_up, :motor_down, :stop]
     case Enum.member?(motor_dirs, motor_dir) do
       true-> GenServer.cast(__MODULE__, {:set_motor_dir, motor_dir});
       _-> :invalid_input
@@ -107,7 +116,6 @@ defmodule Driver do
   end
 
 
-  # Internally needed functions
   def set_door_state(door_state) do
     case door_state do
       :open -> GenServer.cast(__MODULE__, {:set_door_state, door_state})
@@ -116,6 +124,15 @@ defmodule Driver do
     end
 
   end
+
+
+  # Internal functions that must be exported for GenServer to work
+  @spec button_dir?(button_dir) :: boolean
+  defp button_dir?(dir) do
+    Enum.member?([:hall_up, :hall_down, :cab], dir)
+  end
+
+  # Handle cast (Change the state of the elevator (lights/motor-direction/etc.))
   @impl true
   def handle_cast({:set_door_state, door_state}, socket) do
     door_code = %{open: 1, closed: 0}[door_state]
@@ -123,7 +140,7 @@ defmodule Driver do
     {:noreply, socket}
   end
   def handle_cast({:set_motor_dir, motor_dir}, socket)do
-    motor_codes = %{motor_up: 1, motor_down: 255, motor_still: 0 }
+    motor_codes = %{motor_up: 1, motor_down: 255, stop: 0 }
     motor_code = motor_codes[motor_dir]
     :gen_tcp.send(socket, [1, motor_code, 0,0])
     {:noreply, socket}
@@ -148,7 +165,7 @@ defmodule Driver do
   end
 
 
-  # Handle calls
+  # Handle calls (When you need to ask a gen-server about something)
   @impl true
   def handle_call(:poll_floor_state, _from, socket) do
     :gen_tcp.send(socket, [7, 0, 0, 0])
