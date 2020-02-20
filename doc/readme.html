@@ -8,7 +8,7 @@
     <meta name="project" content="heis_driver v0.1.0">
     <title>Elixir elevator driver — heis_driver v0.1.0</title>
     <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
-    <script src="dist/sidebar_items-1c6bdd4598.js"></script>
+    <script src="dist/sidebar_items-1fb3d919ae.js"></script>
       <script src="docs_config.js"></script>
     <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
     
@@ -66,58 +66,40 @@ heis_driver      </a>
 
 
 <h1>Elixir elevator driver</h1>
-<p><a href="https://jornbh.github.io/heis_driver/doc/index.html">Documetnation</a></p>
+<h2 id="documetnation" class="section-heading">
+  <a href="#documetnation" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  <a href="https://jornbh.github.io/heis_driver/doc/index.html">Documetnation</a>
+</h2>
+
+<p>All functions are documented in the link</p>
+<h2 id="how-to-include-the-modules-in-your-project" class="section-heading">
+  <a href="#how-to-include-the-modules-in-your-project" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  How to include the modules in your project
+</h2>
+
 <p>If you are using Mix as you Elixir build tool (which you really should), go into mix.exs and modify the function <code class="inline">deps</code> to contain</p>
 <pre><code class="[elixir]">defp deps do
     [
-      {:heis_driver, git: &quot;https://github.com/jornbh/heis_driver.git&quot;, tag: &quot;0.1.0&quot;}
+      {:heis_driver, git: &quot;https://github.com/jornbh/heis_driver.git&quot;, tag: &quot;0.1.2&quot;}
     ]
   end</code></pre>
 <p>Modify the tag to correspond to a newer release if some bugfixes are added later.</p>
 <p>The driver should be available as a module named <a href="Driver.html"><code class="inline">Driver</code></a>, just like your normal modules.</p>
-<h2 id="usage" class="section-heading">
-  <a href="#usage" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Usage
-</h2>
-
-<p>You must start the driver with <code class="inline">start_link()</code> or <code class="inline">start_link(ip_address, port)</code> before any of the other functions will work. The user is responsible for not giving stupid input or polling nonexistent buttons.</p>
-<h2 id="api" class="section-heading">
-  <a href="#api" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  API
-</h2>
-
-<h3 id="functions" class="section-heading">
-  <a href="#functions" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Functions
-</h3>
-
-<pre><code class="[elixir]">{:ok, driver_pid} = Driver.start_link
-  button_pressed?(floor, button_direction)
-  set_motor_dir(motor_direction)
-  set_button_light(floor, button_direction, on_or_off)
-  set_floor_indicator(floor)
-  set_door_state(door_state)</code></pre>
-<h3 id="data-types" class="section-heading">
-  <a href="#data-types" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
-  Data-types
-</h3>
-
-<p>door_state: (:opne/:closed) motor_direction: (:hall_up/:hall_down/:cab) floor: (0/1/.../number_of_floors -1) door_state: :open/:closed</p>
 <h2 id="using-the-driver-in-erlang" class="section-heading">
   <a href="#using-the-driver-in-erlang" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Using the driver in Erlang
 </h2>
 
 <p>If you are using rebar3, downloading the dependency is somewhat similar, but you need a plugin. Just add/modify the lines for <code class="inline">plugins</code> and <code class="inline">provider_hooks</code> in rebar.config, so that they look like this</p>
-<pre><code class="nohighlight makeup elixir"><span class="p" data-group-id="6761946016-1">{</span><span class="n">plugins</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6761946016-2">[</span><span class="n">rebar_mix</span><span class="p" data-group-id="6761946016-2">]</span><span class="p" data-group-id="6761946016-1">}</span><span class="o">.</span><span class="w">
-</span><span class="p" data-group-id="6761946016-3">{</span><span class="n">provider_hooks</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6761946016-4">[</span><span class="p" data-group-id="6761946016-5">{</span><span class="n">post</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6761946016-6">[</span><span class="p" data-group-id="6761946016-7">{</span><span class="n">compile</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6761946016-8">{</span><span class="n">mix</span><span class="p">,</span><span class="w"> </span><span class="n">consolidate_protocols</span><span class="p" data-group-id="6761946016-8">}</span><span class="p" data-group-id="6761946016-7">}</span><span class="p" data-group-id="6761946016-6">]</span><span class="p" data-group-id="6761946016-5">}</span><span class="p" data-group-id="6761946016-4">]</span><span class="p" data-group-id="6761946016-3">}</span><span class="o">.</span></code></pre>
+<pre><code class="nohighlight makeup elixir"><span class="p" data-group-id="9945049071-1">{</span><span class="n">plugins</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9945049071-2">[</span><span class="n">rebar_mix</span><span class="p" data-group-id="9945049071-2">]</span><span class="p" data-group-id="9945049071-1">}</span><span class="o">.</span><span class="w">
+</span><span class="p" data-group-id="9945049071-3">{</span><span class="n">provider_hooks</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9945049071-4">[</span><span class="p" data-group-id="9945049071-5">{</span><span class="n">post</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9945049071-6">[</span><span class="p" data-group-id="9945049071-7">{</span><span class="n">compile</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9945049071-8">{</span><span class="n">mix</span><span class="p">,</span><span class="w"> </span><span class="n">consolidate_protocols</span><span class="p" data-group-id="9945049071-8">}</span><span class="p" data-group-id="9945049071-7">}</span><span class="p" data-group-id="9945049071-6">]</span><span class="p" data-group-id="9945049071-5">}</span><span class="p" data-group-id="9945049071-4">]</span><span class="p" data-group-id="9945049071-3">}</span><span class="o">.</span></code></pre>
 <p>This makes it possible to include elixir-dependencies. Afterwards, modify the line for <code class="inline">deps</code>, so that it becomes:</p>
 <pre><code class="[erlang]">{deps, [
-    {heis_driver, {git, &quot;git://github.com/jornbh/heis_driver.git&quot;, {tag, &quot;0.1.0&quot;}}}
+    {heis_driver, {git, &quot;git://github.com/jornbh/heis_driver.git&quot;, {tag, &quot;0.1.2&quot;}}}
 ]}.</code></pre>
 <p>Now, you will have to write call the module, which will be an atom that starts With &quot;Elixir.&quot;, and the rest is just the normal module name. If the function has problematic signs, use the same type of quotes around it as well.</p>
-<pre><code class="nohighlight makeup elixir"><span class="sc">&#39;Elixir.Driver&#39;</span><span class="ss">:set_door_state</span><span class="p" data-group-id="3522710258-1">(</span><span class="n">closed</span><span class="p" data-group-id="3522710258-1">)</span><span class="o">.</span><span class="w"> 
-</span><span class="sc">&#39;Elixir.Driver&#39;</span><span class="ss">:&#39;button_pressed?&#39;</span><span class="p" data-group-id="3522710258-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">hall_up</span><span class="p" data-group-id="3522710258-2">)</span><span class="o">.</span></code></pre>
+<pre><code class="nohighlight makeup elixir"><span class="sc">&#39;Elixir.Driver&#39;</span><span class="ss">:set_door_state</span><span class="p" data-group-id="8417901419-1">(</span><span class="n">closed</span><span class="p" data-group-id="8417901419-1">)</span><span class="o">.</span><span class="w"> 
+</span><span class="sc">&#39;Elixir.Driver&#39;</span><span class="ss">:&#39;button_pressed?&#39;</span><span class="p" data-group-id="8417901419-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">hall_up</span><span class="p" data-group-id="8417901419-2">)</span><span class="o">.</span></code></pre>
 <h2 id="further-reading" class="section-heading">
   <a href="#further-reading" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Further reading

@@ -1,13 +1,15 @@
 # Elixir elevator driver
 
-[Documetnation](https://jornbh.github.io/heis_driver/doc/index.html)
+## [Documetnation](https://jornbh.github.io/heis_driver/doc/index.html)
+All functions are documented in the link
 
+## How to include the modules in your project
 If you are using Mix as you Elixir build tool (which you really should), go into mix.exs and modify the function `deps` to contain
 
 ```[elixir]
 defp deps do
     [
-      {:heis_driver, git: "https://github.com/jornbh/heis_driver.git", tag: "0.1.0"}
+      {:heis_driver, git: "https://github.com/jornbh/heis_driver.git", tag: "0.1.2"}
     ]
   end
 ```
@@ -15,27 +17,6 @@ defp deps do
 Modify the tag to correspond to a newer release if some bugfixes are added later.
 
 The driver should be available as a module named `Driver`, just like your normal modules.
-
-## Usage
-
-You must start the driver with `start_link()` or `start_link(ip_address, port)` before any of the other functions will work. The user is responsible for not giving stupid input or polling nonexistent buttons.
-
-## API
-
-### Functions
-
-```[elixir]
-{:ok, driver_pid} = Driver.start_link
-  button_pressed?(floor, button_direction)
-  set_motor_dir(motor_direction)
-  set_button_light(floor, button_direction, on_or_off)
-  set_floor_indicator(floor)
-  set_door_state(door_state)
-```
-
-### Data-types
-
-door_state: (:opne/:closed) motor_direction: (:hall_up/:hall_down/:cab) floor: (0/1/.../number_of_floors -1) door_state: :open/:closed
 
 ## Using the driver in Erlang
 
@@ -50,7 +31,7 @@ This makes it possible to include elixir-dependencies. Afterwards, modify the li
 
 ```[erlang]
 {deps, [
-    {heis_driver, {git, "git://github.com/jornbh/heis_driver.git", {tag, "0.1.0"}}}
+    {heis_driver, {git, "git://github.com/jornbh/heis_driver.git", {tag, "0.1.2"}}}
 ]}.
 ```
 
